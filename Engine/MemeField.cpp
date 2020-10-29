@@ -117,19 +117,75 @@ bool MemeField::Tile::HasNoNeighborMemes() const
 
 void MemeField::Tile::SetNeighborMemeCount( int memeCount )
 {
-	assert( nNeighborMemes == -1 );
+	//assert( nNeighborMemes == -1 );
 	nNeighborMemes = memeCount;
 }
 
-MemeField::MemeField( const Vei2& center,int nMemes )
-	:
-	topLeft( center - Vei2( width * SpriteCodex::tileSize,height * SpriteCodex::tileSize ) / 2 )
+MemeField::MemeField( )
 {
-	assert( nMemes > 0 && nMemes < width * height );
+}
+
+void MemeField::InitField( const Vei2& center, const SelectionMenu::Size& size )
+{
+	GenDims( size );
+	delete [] field;
+	field = new Tile[ width * height]; 
+	topLeft = { center - Vei2( width * SpriteCodex::tileSize, height * SpriteCodex::tileSize ) / 2 };
+
+	SpawnMemes();
+	SetNeighbors();
+}
+
+
+void MemeField::InitState( )
+{
+	assert( state == State::Fucked || state == State::Winrar );
+	state = State::Memeing;
+}
+
+void MemeField::GenDims( const SelectionMenu::Size& size )
+{
 	std::random_device rd;
-	std::mt19937 rng( rd() );
-	std::uniform_int_distribution<int> xDist( 0,width - 1 );
-	std::uniform_int_distribution<int> yDist( 0,height - 1 );
+	std::mt19937 rng( rd( ) );
+
+	std::uniform_int_distribution<int> smallWidth( 3, 8 );
+	std::uniform_int_distribution<int> smallHeight( 3, 8 );
+
+	std::uniform_int_distribution<int> medWidth( 8, 16 );
+	std::uniform_int_distribution<int> medHeight( 8, 16 );
+
+	std::uniform_int_distribution<int> largeWidth( 16, 20 );
+	std::uniform_int_distribution<int> largeHeight( 16, 20 );
+
+	switch( size )
+	{
+		case SelectionMenu::Size::Small:
+
+			width = smallWidth( rng );
+			height = smallHeight( rng );
+			break;
+
+		case SelectionMenu::Size::Medium:
+
+			width = medWidth( rng );
+			height = medHeight( rng );
+			break;
+
+		case SelectionMenu::Size::Large:
+
+			width = largeWidth( rng );
+			height = largeHeight( rng );
+			break;
+	}
+}
+
+void MemeField::SpawnMemes( )
+{
+	const int nMemes = width + height;
+	std::random_device rd;
+	std::mt19937 rng( rd( ) );
+	std::uniform_int_distribution<int> xDist( 0, width - 1 );
+	std::uniform_int_distribution<int> yDist( 0, height - 1 );
 
 	for( int nSpawned = 0; nSpawned < nMemes; ++nSpawned )
 	{
@@ -137,12 +193,14 @@ MemeField::MemeField( const Vei2& center,int nMemes )
 		do
 		{
 			spawnPos = { xDist( rng ),yDist( rng ) };
-		}
-		while( TileAt( spawnPos ).HasMeme() );
+		} while( TileAt( spawnPos ).HasMeme( ) );
 
-		TileAt( spawnPos ).SpawnMeme();
+		TileAt( spawnPos ).SpawnMeme( );
 	}
+}
 
+void MemeField::SetNeighbors( )
+{
 	for( Vei2 gridPos = { 0,0 }; gridPos.y < height; gridPos.y++ )
 	{
 		for( gridPos.x = 0; gridPos.x < width; gridPos.x++ )
@@ -207,6 +265,11 @@ MemeField::State MemeField::GetState() const
 	return state;
 }
 
+MemeField::~MemeField( )
+{
+	delete [] field;
+}
+
 void MemeField::RevealTile( const Vei2& gridPos )
 {
 	Tile& tile = TileAt( gridPos );
@@ -238,12 +301,12 @@ void MemeField::RevealTile( const Vei2& gridPos )
 
 MemeField::Tile& MemeField::TileAt( const Vei2& gridPos )
 {
-	return field[gridPos.y * width + gridPos.x];
+	return *( field + gridPos.y * width + gridPos.x );
 }
 
 const MemeField::Tile& MemeField::TileAt( const Vei2 & gridPos ) const
 {
-	return field[gridPos.y * width + gridPos.x];
+	return *( field + gridPos.y * width + gridPos.x );
 }
 
 Vei2 MemeField::ScreenToGrid( const Vei2& screenPos )
@@ -275,10 +338,10 @@ int MemeField::CountNeighborMemes( const Vei2 & gridPos )
 
 bool MemeField::GameIsWon() const
 {
-	for( const Tile& t : field )
+	for( int t = 0; t < width * height; t++ )
 	{
-		if( (t.HasMeme() && !t.IsFlagged()) ||
-			(!t.HasMeme() && !t.IsRevealed()) )
+		if( (field[t].HasMeme() && !field[t].IsFlagged()) ||
+			(!field[t].HasMeme() && !field[t].IsRevealed()) )
 		{
 			return false;
 		}

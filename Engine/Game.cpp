@@ -26,8 +26,7 @@ Game::Game( MainWindow& wnd )
 	:
 	wnd( wnd ),
 	gfx( wnd ),
-	menu( { gfx.GetRect().GetCenter().x,200 } ),
-	field( gfx.GetRect().GetCenter(),4 )
+	menu( { gfx.GetRect().GetCenter().x,200 } )
 {
 }
 
@@ -65,17 +64,29 @@ void Game::UpdateModel()
 					}
 				}
 			}
+			else
+			{
+				//click additionally to return to menu
+				if( e.GetType() == Mouse::Event::Type::LPress )
+				{
+					field.InitState( );
+					state = State::SelectionMenu;
+				}
+			}
 		}
 		else
 		{
+			//based on mouse click input
 			const SelectionMenu::Size s = menu.ProcessMouse( e );
-			switch( s )
+			//initialize the field with chosen size range
+			if( s != SelectionMenu::Size::Invalid )
 			{
-			case SelectionMenu::Size::Small:
-			case SelectionMenu::Size::Medium:
-			case SelectionMenu::Size::Large:
+				const Vei2 center = gfx.GetRect( ).GetCenter( );
+				field.InitField( center, s );
+				//beggin game
 				state = State::Memesweeper;
 			}
+			
 		}
 	}
 }

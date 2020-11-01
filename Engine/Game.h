@@ -44,13 +44,15 @@ private:
 	void UpdateModel();
 	/********************************/
 	/*  User Functions              */
+	void AllocMem();
+	void RelieveMem();
 	/********************************/
 private:
 	MainWindow& wnd;
 	Graphics gfx;
 	/********************************/
 	/*  User Variables              */
-	MemeField field;
+	MemeField* field = nullptr;
 	SelectionMenu menu;
 	State state = State::SelectionMenu;
 	/********************************/

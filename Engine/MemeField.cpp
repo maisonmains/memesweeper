@@ -139,8 +139,10 @@ void MemeField::InitField( const Vei2& center, const SelectionMenu::Size& size )
 
 void MemeField::InitState( )
 {
-	assert( state == State::Fucked || state == State::Winrar );
-	state = State::Memeing;
+	if( !( state == State::Memeing ) )
+	{
+		state = State::Memeing;
+	}
 }
 
 void MemeField::GenDims( const SelectionMenu::Size& size )
@@ -148,14 +150,14 @@ void MemeField::GenDims( const SelectionMenu::Size& size )
 	std::random_device rd;
 	std::mt19937 rng( rd( ) );
 
-	std::uniform_int_distribution<int> smallWidth( 3, 8 );
-	std::uniform_int_distribution<int> smallHeight( 3, 8 );
+	std::uniform_int_distribution<int> smallWidth( 4, 8 );
+	std::uniform_int_distribution<int> smallHeight( 4, 8 );
 
 	std::uniform_int_distribution<int> medWidth( 8, 16 );
-	std::uniform_int_distribution<int> medHeight( 8, 16 );
+	std::uniform_int_distribution<int> medHeight( 8,16 );
 
-	std::uniform_int_distribution<int> largeWidth( 16, 20 );
-	std::uniform_int_distribution<int> largeHeight( 16, 20 );
+	std::uniform_int_distribution<int> largeWidth( 16, 24 );
+	std::uniform_int_distribution<int> largeHeight( 16, 24 );
 
 	switch( size )
 	{
@@ -268,6 +270,7 @@ MemeField::State MemeField::GetState() const
 MemeField::~MemeField( )
 {
 	delete [] field;
+	field = nullptr;
 }
 
 void MemeField::RevealTile( const Vei2& gridPos )

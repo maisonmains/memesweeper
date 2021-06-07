@@ -30,6 +30,11 @@ Game::Game( MainWindow& wnd )
 {
 }
 
+Game::~Game( )
+{
+	RelieveMem();
+}
+
 void Game::Go()
 {
 	gfx.BeginFrame();	
@@ -66,10 +71,12 @@ void Game::UpdateModel()
 			}
 			else
 			{
-				//click additionally to return to menu
+
+				//click again to return to menu
 				if( e.GetType() == Mouse::Event::Type::LPress )
-				{
-					RelieveMem();
+				{	
+					//release heap-allocated mem. when not memeing
+					RelieveMem( );
 					state = State::SelectionMenu;
 				}
 			}
@@ -81,10 +88,11 @@ void Game::UpdateModel()
 			//initialize the field with chosen size range
 			if( s != SelectionMenu::Size::Invalid )
 			{
-				AllocMem();
+				
 
 				const Vei2 center = gfx.GetRect( ).GetCenter( );
-				field->InitField( center, s );
+				field = new MemeField( center, s );
+
 				//beggin game
 				state = State::Memesweeper;
 				field->InitState( );
@@ -92,11 +100,6 @@ void Game::UpdateModel()
 			
 		}
 	}
-}
-
-void Game::AllocMem( )
-{
-	field = new MemeField();
 }
 
 void Game::RelieveMem( )

@@ -121,8 +121,9 @@ void MemeField::Tile::SetNeighborMemeCount( int memeCount )
 	nNeighborMemes = memeCount;
 }
 
-MemeField::MemeField( )
+MemeField::MemeField( const Vei2& center, const SelectionMenu::Size& size )
 {
+	InitField( center, size );
 }
 
 void MemeField::InitField( const Vei2& center, const SelectionMenu::Size& size )

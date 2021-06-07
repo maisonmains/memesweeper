@@ -40,7 +40,7 @@ private:
 		int nNeighborMemes = -1;
 	};
 public:
-	MemeField();
+	MemeField( const Vei2& center, const SelectionMenu::Size& size );
 	void InitState( );
 	void InitField( const Vei2& center, const SelectionMenu::Size& size );
 	void Draw( Graphics& gfx ) const;

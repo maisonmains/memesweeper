@@ -37,6 +37,7 @@ private:
 public:
 	Game( class MainWindow& wnd );
 	Game( const Game& ) = delete;
+	~Game();
 	Game& operator=( const Game& ) = delete;
 	void Go();
 private:
@@ -44,7 +45,6 @@ private:
 	void UpdateModel();
 	/********************************/
 	/*  User Functions              */
-	void AllocMem();
 	void RelieveMem();
 	/********************************/
 private:

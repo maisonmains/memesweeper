@@ -50,8 +50,11 @@ private:
 	Graphics gfx;
 	/********************************/
 	/*  User Variables              */
-	MemeField field;
-	SelectionMenu menu;
+	MemeField* field = nullptr;
+	SelectionMenu* menu = nullptr;
 	State state = State::SelectionMenu;
+	const int maxFieldScale = 12;
+	const int smallFieldScale = maxFieldScale / 4;
+	const int mediumFieldScale = maxFieldScale / 2;
 	/********************************/
 };

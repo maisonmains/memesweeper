@@ -5,6 +5,7 @@
 #include "SpriteCodex.h"
 #include <algorithm>
 
+
 void MemeField::Tile::SpawnMeme()
 {
 	assert( !hasMeme );
@@ -121,9 +122,12 @@ void MemeField::Tile::SetNeighborMemeCount( int memeCount )
 	nNeighborMemes = memeCount;
 }
 
-MemeField::MemeField( const Vei2& center,int nMemes )
+MemeField::MemeField( const Vei2& center, int p_width, int p_height,int nMemes )
 	:
-	topLeft( center - Vei2( width * SpriteCodex::tileSize,height * SpriteCodex::tileSize ) / 2 )
+	width( p_width ),
+	height( p_height ),
+	topLeft( center - Vei2( width * SpriteCodex::tileSize,height * SpriteCodex::tileSize ) / 2 ),
+	field( new Tile[ width * height ] )
 {
 	assert( nMemes > 0 && nMemes < width * height );
 	std::random_device rd;
@@ -275,10 +279,10 @@ int MemeField::CountNeighborMemes( const Vei2 & gridPos )
 
 bool MemeField::GameIsWon() const
 {
-	for( const Tile& t : field )
-	{
-		if( (t.HasMeme() && !t.IsFlagged()) ||
-			(!t.HasMeme() && !t.IsRevealed()) )
+	for( int i = 0 ; i < width * height; i++ )
+	{	
+		if( (field[ i ].HasMeme() && !field[ i ].IsFlagged()) ||
+			(!field[ i ].HasMeme() && !field[ i ].IsRevealed()) )
 		{
 			return false;
 		}
